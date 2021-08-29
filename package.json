@@ -1,0 +1,31 @@
+{
+  "name": "discord-bot-template",
+  "author": "Christopher Scott",
+  "license": "MIT",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "app.js",
+  "private": true,
+  "workspaces": [
+    "src"
+  ],
+  "scripts": {
+    "dev": "nodemon --es-module-specifier-resolution=node -r dotenv/config app.js",
+    "start": "node --es-module-specifier-resolution=node app.js",
+    "kill": "pkill -9 node"
+  },
+  "dependencies": {
+    "@discordjs/builders": "^0.5.0",
+    "@discordjs/rest": "^0.1.0-canary.0",
+    "bufferutil": "^4.0.3",
+    "discord-api-types": "^0.22.0",
+    "discord.js": "^13.1.0",
+    "node-localstorage": "^2.2.1",
+    "utf-8-validate": "^5.0.5",
+    "zlib-sync": "^0.1.7"
+  },
+  "devDependencies": {
+    "dotenv": "^10.0.0",
+    "nodemon": "^2.0.12"
+  }
+}
