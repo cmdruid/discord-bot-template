@@ -1,51 +1,52 @@
+/* =================================================== *\
+|| Main application logic for the Discord App.         ||
+\* =================================================== */
 
-/** app.js
- * Main application logic for Discord Bot.
- */
+/** [ IMPORTS ] ============================================================ */
 
-/* [ GLOBALS ] ====================================== */
+import colors      from 'colors'
+import { Client }  from 'discord.js'
+import router      from './src/api'
+import registerListeners from './src/register'
+import { loadCommands } from './src/load/commands'
+import { loadModules }  from './src/load/modules'
+
+/** [ CONSTANTS ] ========================================================== */
 
 const apiToken = process.env.DISCORD_API_TOKEN,
-      perms    = process.env.PERMISSIONS || '2147601472',
+      perms    = process.env.PERMISSIONS || '261993005047',
       scope    = process.env.SCOPE       || 'applications.commands%20bot',
       oauthurl = 'https://discord.com/oauth2/authorize?',
-      authlink = (id) => oauthurl + `client_id=${id}&permissions=${perms}&scope=${scope}`;
+      authlink = (id) => oauthurl + `client_id=${id}&permissions=${perms}&scope=${scope}`,
+      timeStr  = `Client initialized / authenticated`;
 
-let refreshCommands = false; // If true, will re-upload commands.json to Discord API on client load.
+/** [ EXPORTS ] ============================================================ */
 
-/* [ IMPORTS ] ====================================== */
+export const config  = await loadModules();
+export const client  = new Client({ intents: config.required_intents });
+export const emitter = await registerListeners(client, config);
 
-import { Client }   from 'discord.js'
-import commands     from './config/commands.json'
-import Store        from './src/store'
-import EventEmitter from './src/events'
-import { loadCommands, updateCommandCfg } from './src/load'
-
-/* [ EXPORTS ] ====================================== */
-
-export const client = new Client({ intents: [ "GUILDS", "GUILD_MESSAGES" ] }),
-             events = new EventEmitter(),
-             store  = new Store();
-
-/* [ LISTENERS ] ====================================== */
+/** [ LISTENERS ] ========================================================== */
 
 client.on("ready", async () => {
-  events.emit('ready', client);
-  console.log('Bot loaded');
-  console.info(`Use ${authlink(client.user.id)} to invite bot to your server.`);
-  if (refreshCommands) updateCommandCfg(commands, apiToken, client);
+  // End the timer for client login.
+  console.timeEnd(timeStr);
+  // Handle any changes to our command manifest.
+  loadCommands(config.commands, apiToken, client);
+  // Pass ready event to global emitter.
+  emitter.emit('ready', client); 
+  // We are online!
+  console.log('Beep-boop. Robot online!');
+  console.info(`Use the following link to invite this bot onto your server:\n${authlink(client.user.id)}`);
 });
 
-client.on('interactionCreate', async interaction => {
-  if (interaction.isCommand()) {
-    let eventName = `cmd-${interaction.commandName}`;
-    events.emit(eventName, interaction);
-  }
-});
+/** [ MAIN ] =============================================================== */
 
-/* [ MAIN LOGIC ] ====================================== */
-
+// The DISCORD_API_TOKEN env variable must be set to a valid token.
 if (!apiToken) throw Error('No API token is set!');
-
-loadCommands('commands');
+// Measure the time it takes for client to login.
+console.time(timeStr);
+// Start client login.
 client.login(apiToken);
+// Start (optional) web server.
+router.listen(4000);

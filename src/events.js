@@ -1,10 +1,9 @@
-/** events.js
- * Basic implementation of an event emitter class.
- * */
+/** src/events.js
+ * Basic event emitter class.
+ **/
 
-/* [ METHODS ] ========================================= */
-
-class EventEmitter {
+/** [ EXPORTS ] ============================================================ */
+export default class EventEmitter {
 
   constructor() {
     this.events = {};
@@ -53,7 +52,3 @@ class EventEmitter {
     this._getEventListByName(eventName).delete(fn);
   }
 }
-
-/* [ EXPORTS ] =========================================== */
-
-export default EventEmitter;

@@ -1,0 +1,16 @@
+{
+  "required_intents": [
+    "GUILDS",
+    "GUILD_MESSAGES",
+    "GUILD_MEMBERS"
+  ],
+  "required_events": [
+    "messageCreate"
+  ],
+  "access_control": [
+    {
+      "command": "ping",
+      "roles": [ "Moderator" ]
+    }
+  ]
+}
